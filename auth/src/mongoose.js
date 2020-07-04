@@ -1,5 +1,3 @@
-const mongoose = require("mongoose");
-const { db } = require("../configuration");
 const options = {
     autoIndex: false, // Don't build indexes
     reconnectTries: 30, // Retry up to 30 times
@@ -9,15 +7,14 @@ const options = {
     bufferMaxEntries: 0
   }
 
-module.exports.connectDb = () => {
-  mongoose.connect(db, options).then(()=>{
+const connectWithRetry = () => {
+  console.log('MongoDB connection with retry')
+  mongoose.connect("mongodb://mongo:27017/test", options).then(()=>{
     console.log('MongoDB is connected')
   }).catch(err=>{
-  console.log('MongoDB connection unsuccessful, retry after 5 seconds.')
-  setTimeout(connectWithRetry, 5000)
+    console.log('MongoDB connection unsuccessful, retry after 5 seconds.')
+    setTimeout(connectWithRetry, 5000)
   })
-  return mongoose.connection;
-};
+}
 
-
-
+connectWithRetry()
